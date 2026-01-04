@@ -74,6 +74,7 @@ const Navbar = ({ user, setPage, onLogout }) => {
 
             <button onClick={() => setPage('chat')} className="p-2.5 hover:bg-zinc-100 rounded-full text-zinc-600 relative transition-all active:scale-90">
               <MessageSquare size={20} />
+
             </button>
 
             <div className="h-8 w-[1px] bg-zinc-200 hidden sm:block"></div>

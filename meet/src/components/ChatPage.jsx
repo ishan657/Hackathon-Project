@@ -1,15 +1,22 @@
 import React from 'react';
+import { useState } from "react";
 import { MessageSquare } from 'lucide-react';
 import Button from './ui/Button';
+import Chatsidebar from "./chat/Chatsidebar";
+import Chatwindow from "./chat/Chatwindow";
 
-const ChatPage = ({ setPage }) => {
+export default function ChatPage() {
+  const [activeFriend, setActiveFriend] = useState(null);
+
   return (
-    <div className="pt-40 px-6 text-center">
-      <MessageSquare size={48} className="mx-auto text-zinc-200 mb-6" />
-      <h2 className="text-2xl font-bold">Chats are coming soon!</h2>
-      <Button variant="ghost" onClick={() => setPage('dashboard')}>Back</Button>
+    <div className="flex h-[calc(100vh-64px)]">
+      <Chatsidebar
+        activeFriend={activeFriend}
+        setActiveFriend={setActiveFriend}
+      />
+      <Chatwindow activeFriend={activeFriend} />
     </div>
   );
-};
+}
 
-export default ChatPage;
+
