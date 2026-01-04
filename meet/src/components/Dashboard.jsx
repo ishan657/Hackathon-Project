@@ -2,7 +2,7 @@ import React from 'react';
 import { Heart, Trophy, Tent, BookOpen, Clock, Code, ArrowRight } from 'lucide-react';
 import Button from './ui/Button';
 
-const Dashboard = ({ user, setPage }) => {
+const Dashboard = ({ user, setPage,onStartExploring }) => {
   const categories = [
     { id: 'dating', title: 'Campus Dating', icon: <Heart className="fill-red-500 text-red-500" />, desc: 'Find that special connection.' },
     { id: 'hackathon', title: 'Hackathon Partner', icon: <Trophy className="text-amber-500" />, desc: 'Form the ultimate tech squad.' },
@@ -19,7 +19,12 @@ const Dashboard = ({ user, setPage }) => {
           <div className="inline-flex items-center gap-2 bg-white/10 px-4 py-1.5 rounded-full text-zinc-300 text-[10px] font-black uppercase tracking-[0.2em]">Smart Matching Live</div>
           <h2 className="text-5xl font-bold tracking-tight leading-tight">Welcome to NITA Tribe, <br/><span className="italic font-serif text-zinc-400">{user?.name?.split(' ')[0] || 'NITian'}</span></h2>
           <p className="text-zinc-400 text-lg font-medium leading-relaxed max-w-md">Your perfect partner for {user?.interests?.[0] || 'projects'} is ready to connect.</p>
-          <Button onClick={() => setPage('matches')} className="bg-white text-zinc-900 px-10 h-14 rounded-2xl">Start Exploring <ArrowRight /></Button>
+          {/* <Button onClick={() => setPage('matches')} className="bg-white text-zinc-900 px-10 h-14 rounded-2xl">Start Exploring <ArrowRight /></Button> */}
+          <Button onClick={onStartExploring}>
+          Start Exploring
+         <ArrowRight className="w-5 h-5" />
+          </Button>
+
         </div>
         <div className="w-full lg:w-1/3 aspect-square bg-white/5 rounded-[2.5rem] flex items-center justify-center border border-white/10 shadow-inner">
            {/* <MapPin size={120} className="text-white/10" /> */}
