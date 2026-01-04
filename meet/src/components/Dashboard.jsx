@@ -10,6 +10,9 @@ const Dashboard = ({ user, setPage,onStartExploring }) => {
     { id: 'study', title: 'Study Buddy', icon: <BookOpen className="text-blue-500" />, desc: 'Focus on your goals together.' },
     { id: 'night', title: 'Night Canteen Buddy', icon: <Clock className="text-orange-500" />, desc: 'Late night snack companion.' },
     { id: 'coding', title: 'Coding Match', icon: <Code className="text-zinc-600" />, desc: 'Pair program and build things.' },
+    { id: 'Cricket', title: 'cricket Match', icon: <Code className="text-zinc-600" />, desc: 'Play and Win Life.' },
+    { id: 'Poetry', title: ' Poetry', icon: <Code className="text-zinc-600" />, desc: 'Pair Heart and Write Love.' },
+    { id: 'Drama', title: 'Drama', icon: <Code className="text-zinc-600" />, desc: 'Pair program and build things.' },
   ];
 
   return (
