@@ -64,14 +64,14 @@ const Navbar = ({ user, setPage, onLogout }) => {
         {user ? (
           <div className="flex items-center gap-4 sm:gap-6">
             <div className="hidden md:flex items-center gap-6 mr-2">
-              <button onClick={() => setPage('dashboard')} className="text-sm font-bold text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white">Dashboard</button>
-              <button onClick={() => setPage('matches')} className="text-sm font-bold text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white">Explore</button>
+              <button onClick={() => setPage('dashboard')} className="text-sm font-bold text-zinc-900 dark:text-zinc-100 hover:text-zinc-900 dark:hover:text-white">Dashboard</button>
+              <button onClick={() => setPage('matches')} className="text-sm font-bold text-zinc-900 dark:text-zinc-100 hover:text-zinc-900 dark:hover:text-white">Explore</button>
             </div>
 
              {/* Theme Toggle Button */}
              <button
               onClick={toggleTheme}
-              className="p-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full text-zinc-600 dark:text-zinc-300 relative transition-all active:scale-90"
+              className="p-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full text-zinc-900 dark:text-zinc-100 relative transition-all active:scale-90"
               title="Toggle Theme"
             >
               {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
@@ -81,7 +81,7 @@ const Navbar = ({ user, setPage, onLogout }) => {
             <div className="relative">
               <button 
                 onClick={() => setShowStatus(!showStatus)}
-                className="p-2.5 hover:bg-zinc-100 rounded-full text-zinc-600 relative transition-all active:scale-90"
+                className="p-2.5 hover:bg-zinc-100 rounded-full text-zinc-900 dark:text-zinc-100 relative transition-all active:scale-90"
                 title="Requests Status"
               >
                 <Bell size={20} />
@@ -111,7 +111,7 @@ const Navbar = ({ user, setPage, onLogout }) => {
               )}
             </div>
 
-            <button onClick={() => setPage('chat')} className="p-2.5 hover:bg-zinc-100 rounded-full text-zinc-600 relative transition-all active:scale-90">
+            <button onClick={() => setPage('chat')} className="p-2.5 hover:bg-zinc-100 rounded-full text-zinc-900 dark:text-zinc-100 relative transition-all active:scale-90">
               <MessageSquare size={20} />
 
             </button>
@@ -120,7 +120,7 @@ const Navbar = ({ user, setPage, onLogout }) => {
 
             <div className="flex items-center gap-3 group cursor-pointer" onClick={() => setPage('onboarding')}>
               <div className="text-right hidden lg:block">
-                <p className="text-sm font-bold text-zinc-900 leading-none">{user.name || 'NITian'}</p>
+                <p className="text-sm font-bold text-zinc-500 dark:text-zinc-100 leading-none">{user.name || 'NITian'}</p>
                 <p className="text-[10px] font-bold text-zinc-400 uppercase mt-1 tracking-widest">Profile</p>
               </div>
               <div className="w-10 h-10 rounded-full border-2 border-white shadow-sm overflow-hidden bg-zinc-100 hover:ring-2 hover:ring-zinc-900 transition-all">

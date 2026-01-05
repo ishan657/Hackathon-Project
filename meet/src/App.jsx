@@ -43,16 +43,26 @@ export default function App() {
   };
   
 
-  const handleLogin = (enrollment) => {
-    const mockUser = {
-      uid: enrollment || 'nita-user-123',
-      name: enrollment || 'NITA Student',
-      avatar: null,
-      interests: []
-    };
-    setUser(mockUser);
-    setPage('onboarding');
+  // const handleLogin = (enrollment) => {
+  //   const mockUser = {
+  //     uid: enrollment || 'nita-user-123',
+  //     name: enrollment || 'NITA Student',
+  //     avatar: null,
+  //     interests: []
+  //   };
+  //   setUser(mockUser);
+  //   setPage('onboarding');
+  // };
+  const handleLogin = () => {
+    // 🔴 TEMPORARY DUMMY AUTH
+    setUser({
+      id: "dummy-user",
+      name: "NITA Student",
+    });
+  
+    setPage("onboarding"); // move forward
   };
+  
 
   const handleLogout = () => {
     setUser(null);
