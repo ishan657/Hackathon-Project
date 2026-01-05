@@ -34,9 +34,9 @@ const Dashboard = ({ user, setPage,onStartExploring }) => {
         <div className="w-full lg:w-1/3 aspect-square bg-white/5 rounded-[2.5rem] flex items-center justify-center border border-white/10 shadow-inner">
            {/* <MapPin size={120} className="text-white/10" /> */}
            <img
-             src="b.png"
+             src="/b.png"
              alt="college"
-             className="rounded-xl"
+             className="rounded-xl bg-white p-4"
            />
 
         </div>
@@ -44,12 +44,25 @@ const Dashboard = ({ user, setPage,onStartExploring }) => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {categories.map((cat) => (
-          <div key={cat.id} className="bg-white p-10 rounded-[3rem] border border-zinc-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group cursor-pointer" onClick={() => setPage('matches')}>
+          <div key={cat.id} className="bg-white dark:bg-zinc-900
+           p-10 rounded-[3rem]
+           border border-zinc-100 dark:border-zinc-800
+          shadow-sm dark:shadow-black/40
+           hover:shadow-xl hover:-translate-y-1
+          transition-all group cursor-pointer" onClick={() => setPage('matches')}>
             <div className="mb-6 w-16 h-16 rounded-2xl bg-zinc-50 flex items-center justify-center group-hover:scale-110 transition-transform">
               {cat.icon}
             </div>
-            <h3 className="text-2xl font-bold text-zinc-900 mb-2">{cat.title}</h3>
-            <p className="text-zinc-500 font-medium leading-relaxed">{cat.desc}</p>
+            <h3 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">
+  {cat.title}
+           </h3>
+
+          <p className="text-zinc-500 dark:text-zinc-100 font-medium leading-relaxed">
+  {cat.desc}
+          </p>
+
+            {/* <h3 className="text-2xl font-bold text-zinc-900 mb-2">{cat.title}</h3>
+            <p className="text-zinc-500 font-medium leading-relaxed">{cat.desc}</p> */}
           </div>
         ))}
       </div>
