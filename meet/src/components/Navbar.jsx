@@ -5,38 +5,77 @@ import {
   CheckCircle2, Plus, Bell, Heart, Star, Sparkles, Loader2,
   GraduationCap, MapPinIcon, Calendar, Info, Trophy, Mic, Activity, Flame, Zap,
   MoreVertical, Phone, Video, Paperclip, Smile, Camera, Image as ImageIcon, Compass,
-  Lock, Tent, Clock, Github, Linkedin, AlertCircle
+  Lock, Moon,Sun,Tent, Clock, Github, Linkedin, AlertCircle
 } from 'lucide-react';
 import Button from './ui/Button';
 
 const Navbar = ({ user, setPage, onLogout }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [showStatus, setShowStatus] = useState(false);
-
+  const [theme, setTheme] = useState('light'); // State
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Apply theme to the HTML element
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+  }, [theme]);
+
+  // Toggle theme
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
+  };
+
+
+
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-white/80 backdrop-blur-md py-3 shadow-sm' : 'bg-transparent py-6'
-    }`}>
+    // <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+    //   isScrolled ? 'bg-white/80 backdrop-blur-md py-3 shadow-sm' : 'bg-transparent py-6'
+    // }`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300
+      ${isScrolled 
+        ? 'bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md py-3 shadow-sm' 
+        : 'bg-transparent py-6'
+      }`}
+    >
+    
+
+
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => setPage('landing')}>
           <div className="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center">
             <Zap className="text-white w-5 h-5 fill-white" />
           </div>
-          <span className="font-bold text-xl tracking-tight text-zinc-900">NITA Connect</span>
+          <span className="font-bold text-xl tracking-tight text-zinc-900 dark:text-zinc-100">
+          NITA Connect
+         </span>
+
+          {/* <span className="font-bold text-xl tracking-tight text-zinc-900">NITA Connect</span> */}
         </div>
 
         {user ? (
           <div className="flex items-center gap-4 sm:gap-6">
             <div className="hidden md:flex items-center gap-6 mr-2">
-              <button onClick={() => setPage('dashboard')} className="text-sm font-bold text-zinc-600 hover:text-zinc-900 transition-colors">Dashboard</button>
-              <button onClick={() => setPage('matches')} className="text-sm font-bold text-zinc-600 hover:text-zinc-900 transition-colors">Explore</button>
+              <button onClick={() => setPage('dashboard')} className="text-sm font-bold text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white">Dashboard</button>
+              <button onClick={() => setPage('matches')} className="text-sm font-bold text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white">Explore</button>
             </div>
+
+             {/* Theme Toggle Button */}
+             <button
+              onClick={toggleTheme}
+              className="p-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full text-zinc-600 dark:text-zinc-300 relative transition-all active:scale-90"
+              title="Toggle Theme"
+            >
+              {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+            </button>
 
             {/* Request Status / Notification Icon */}
             <div className="relative">

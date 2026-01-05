@@ -63,24 +63,36 @@ const LandingPage = ({ setPage, user }) => {
   ];
 
   return (
-    <div className="pt-32 pb-20 space-y-32">
+    // <div className="pt-32 pb-20 space-y-32">
+    <div className="pt-32 pb-20 space-y-32
+                bg-transparent
+                text-zinc-900 dark:text-zinc-100">
+
+
       {/* Hero Section */}
       <section className="px-6 animate-in fade-in duration-700">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
           <div className="space-y-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-sm font-bold uppercase tracking-wider">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-950/40
+                border border-blue-100 dark:border-blue-900
+                text-blue-600 dark:text-blue-300">
               <MapPin className="w-4 h-4" />
               <span>Exclusively for NIT Agartala Students</span>
             </div>
-            <h1 className="text-5xl lg:text-7xl font-bold text-zinc-900 leading-[1.1] tracking-tight">
+            <h1 className="text-5xl lg:text-7xl font-bold text-zinc-900 dark:text-zinc-100 leading-[1.1] tracking-tight">
               Match with your <br />
               <span className="text-zinc-500 italic font-serif">NITA Tribe.</span>
             </h1>
-            <p className="text-lg text-zinc-600 max-w-lg leading-relaxed">
+            <p className="text-lg text-zinc-600 dark:text-zinc-400 max-w-lg leading-relaxed">
               Connect with NITA students for projects, late-night coding, trips, or sports based on your schedule.
             </p>
 
-            <div className="bg-white p-8 rounded-[2.5rem] border border-zinc-100 shadow-xl shadow-zinc-200/40 space-y-6 max-w-xl">
+            {/* <div className="bg-white p-8 rounded-[2.5rem] border border-zinc-100 shadow-xl shadow-zinc-200/40 space-y-6 max-w-xl"> */}
+            <div className="bg-white dark:bg-zinc-900
+                p-8 rounded-[2.5rem]
+                border border-zinc-100 dark:border-zinc-800
+                shadow-xl shadow-zinc-200/40 dark:shadow-black/40
+                space-y-6 max-w-xl">
               <div className="space-y-3">
                 <label className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] px-1">Initial Preference</label>
                 <div className="flex flex-wrap gap-2">
@@ -143,15 +155,15 @@ const LandingPage = ({ setPage, user }) => {
           <div className="relative">
             <div className="absolute -inset-4 bg-zinc-200/50 rounded-[3rem] blur-2xl -z-10 animate-pulse"></div>
             <div className="relative bg-zinc-900 rounded-[3rem] p-4 shadow-2xl border-[8px] border-zinc-800 w-full max-w-[380px] mx-auto overflow-hidden">
-              <div className="bg-[#FAF9F6] rounded-[2.2rem] h-[600px] overflow-hidden flex flex-col p-6">
+              <div className="bg-[#FAF9F6] dark:bg-zinc-950 rounded-[2.2rem] h-[600px] overflow-hidden flex flex-col p-6">
                 <div className="flex justify-between items-center mb-6">
                   <div className="w-10 h-10 rounded-full bg-zinc-200 overflow-hidden">
                     <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=NITA_STUDENT" alt="avatar" />
                   </div>
                   <MessageSquare className="w-6 h-6 text-zinc-400" />
                 </div>
-                <div className="bg-white rounded-3xl p-5 shadow-sm border border-zinc-100 flex-grow mb-4">
-                  <div className="aspect-[4/5] bg-zinc-100 rounded-2xl mb-4 overflow-hidden relative shadow-inner">
+                <div className="bg-white dark:bg-zinc-900 rounded-3xl p-5 shadow-sm border border-zinc-100 flex-grow mb-4">
+                  <div className="aspect-[4/5] bg-zinc-100 dark:bg-zinc-800 rounded-2xl mb-4 overflow-hidden relative shadow-inner">
                     <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=400" className="w-full h-full object-cover" alt="Student Life" />
                   </div>
                   <h3 className="font-bold text-zinc-900 text-lg">NITA Connect</h3>
@@ -164,14 +176,26 @@ const LandingPage = ({ setPage, user }) => {
       </section>
 
       {/* Scrolling Purpose Showcase */}
-      <section className="px-6 py-20 bg-zinc-50/50 border-y border-zinc-100">
+      {/* <section className="px-6 py-20 bg-zinc-50/50 border-y border-zinc-100"> */}
+      <section className="px-6 py-20
+                    bg-zinc-50/50 dark:bg-zinc-950
+                    border-y border-zinc-100 dark:border-zinc-800">
+
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 space-y-2">
-            <h2 className="text-3xl font-bold text-zinc-900 tracking-tight">One App, Many Tribes.</h2>
-            <p className="text-zinc-400 font-bold uppercase tracking-widest text-[10px]">What are you connecting for today?</p>
+            <h2 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">One App, Many Tribes.</h2>
+            <p className="text-zinc-900 dark:text-zinc-100 font-bold uppercase tracking-widest text-[10px]">What are you connecting for today?</p>
           </div>
 
-          <div className="bg-white rounded-[3rem] border border-zinc-100 shadow-2xl overflow-hidden max-w-4xl mx-auto flex flex-col md:flex-row items-stretch min-h-[400px]">
+          <div className="bg-white dark:bg-zinc-900
+                rounded-[3rem]
+                border border-zinc-100 dark:border-zinc-800
+                shadow-2xl overflow-hidden max-w-4xl mx-auto flex flex-col md:flex-row items-stretch min-h-[400px]">
+          {/* <div className="bg-white dark:bg-zinc-900
+                rounded-[3rem]
+                border border-zinc-100 dark:border-zinc-800
+                shadow-2xl"> */}
+
             {/* Sidebar Navigation */}
             <div className="w-full md:w-1/3 bg-zinc-50/50 border-r border-zinc-100 p-4 space-y-2">
               {purposes.map((p, idx) => (
@@ -194,9 +218,9 @@ const LandingPage = ({ setPage, user }) => {
             <div className="flex-1 p-8 md:p-12 flex flex-col justify-center animate-in fade-in duration-500">
                <div className="flex flex-col md:flex-row items-center gap-8">
                  <div className="flex-1 space-y-4 text-center md:text-left">
-                   <h3 className="text-3xl font-bold text-zinc-900 tracking-tight">{purposes[activePurposeIdx].label} Partners</h3>
-                   <p className="text-zinc-500 font-medium leading-relaxed">{purposes[activePurposeIdx].desc}</p>
-                   <Button variant="ghost" className="mt-2 text-zinc-900 font-black group" onClick={() => setPage('login')}>
+                   <h3 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">{purposes[activePurposeIdx].label} Partners</h3>
+                   <p className="text-zinc-500 dark:text-zinc-100 font-medium leading-relaxed">{purposes[activePurposeIdx].desc}</p>
+                   <Button variant="ghost" className="mt-2 text-zinc-900 dark:text-zinc-100 font-black group" onClick={() => setPage('login')}>
                      Start Matching <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                    </Button>
                  </div>

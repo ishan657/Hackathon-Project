@@ -60,7 +60,12 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] font-sans selection:bg-zinc-900 selection:text-white">
+    // <div className="min-h-screen bg-[#FAF9F6] font-sans selection:bg-zinc-900 selection:text-white">
+    // <div className="min-h-screen bg-[#FAF9F6] dark:bg-zinc-950">
+    <div className="min-h-screen bg-[#FAF9F6] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
+
+
+      
       <Navbar user={user} setPage={setPage} onLogout={handleLogout} />
       
       <main>

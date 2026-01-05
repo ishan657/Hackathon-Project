@@ -16,7 +16,9 @@ const Dashboard = ({ user, setPage,onStartExploring }) => {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto pt-32 pb-20 px-6 space-y-16 animate-in fade-in duration-500">
+    // <div className="max-w-7xl mx-auto pt-32 pb-20 px-6 space-y-16 animate-in fade-in duration-500">
+    <div className="max-w-7xl mx-auto pt-32 pb-20 px-6 space-y-16  animate-in fade-in duration-500 text-zinc-900 dark:text-zinc-100">
+
       <div className="bg-zinc-900 text-white rounded-[3rem] p-12 lg:p-20 relative overflow-hidden shadow-xl flex flex-col lg:flex-row items-center gap-12">
         <div className="flex-1 space-y-6">
           <div className="inline-flex items-center gap-2 bg-white/10 px-4 py-1.5 rounded-full text-zinc-300 text-[10px] font-black uppercase tracking-[0.2em]">Smart Matching Live</div>
