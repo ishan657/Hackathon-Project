@@ -78,7 +78,7 @@ export default function App() {
       
       <Navbar user={user} setPage={setPage} onLogout={handleLogout} />
       
-      <main>
+      <main className="pt-24 flex-1">
         {page === 'landing' && <LandingPage setPage={setPage} user={user} />}
         
         {page === 'login' && <LoginPage onLogin={handleLogin} />}
@@ -131,4 +131,5 @@ export default function App() {
       <Footer />
     </div>
   );
+
 }
