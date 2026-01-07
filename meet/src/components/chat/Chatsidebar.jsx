@@ -18,6 +18,7 @@ export default function Chatsidebar({ activeFriend, setActiveFriend }) {
   return (
     <div className="
       w-72
+      
       border-r border-zinc-200 dark:border-zinc-800
       bg-white dark:bg-zinc-950
       overflow-y-auto
@@ -27,6 +28,7 @@ export default function Chatsidebar({ activeFriend, setActiveFriend }) {
         p-4 font-semibold text-lg
         border-b border-zinc-200 dark:border-zinc-800
         text-zinc-900 dark:text-zinc-100
+       
       ">
         Friend List
       </div>
