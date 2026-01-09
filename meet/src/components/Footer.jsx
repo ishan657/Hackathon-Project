@@ -41,7 +41,7 @@ const Footer = () => {
             {/* Metadata: Copyright & Location */}
             <div className="flex flex-col gap-2 pt-2">
               <div className="flex items-center justify-center md:justify-start gap-3 text-[9px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
-                <span>© 2024 CAMPUS CONNECT</span>
+                <span>© 2026 CAMPUS CONNECT</span>
                 <div className="flex items-center gap-1.5 border-l border-zinc-200 dark:border-zinc-800 pl-3">
                   <Globe size={11} className="animate-spin-slow" />
                   <span>Agartala, India</span>

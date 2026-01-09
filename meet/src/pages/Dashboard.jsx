@@ -136,7 +136,7 @@ const handleFinalSubmit = async () => {
                 <p className="text-[9px] font-black uppercase text-zinc-400 mb-2 tracking-tighter">Explain more...</p>
                 <input 
                   type="text"
-                  placeholder="e.g. at 9 PM"
+                  placeholder="breifly explain more this...."
                   className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg p-2.5 text-[11px] focus:ring-1 focus:ring-zinc-900 outline-none transition-all placeholder:text-zinc-400"
                   onChange={(e) => setIntent(`${cat.title}: ${e.target.value}`)}
                 />
