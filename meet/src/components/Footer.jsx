@@ -30,7 +30,7 @@ const Footer = () => {
                   <Zap size={16} className="text-white dark:text-zinc-900 fill-current" />
                 </div>
                 <span className="text-lg font-black tracking-tighter text-zinc-900 dark:text-white uppercase italic">
-                  NITA CONNECT
+                  CAMPUS CONNECT
                 </span>
               </div>
               <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-xs mx-auto md:mx-0">
@@ -41,7 +41,7 @@ const Footer = () => {
             {/* Metadata: Copyright & Location */}
             <div className="flex flex-col gap-2 pt-2">
               <div className="flex items-center justify-center md:justify-start gap-3 text-[9px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
-                <span>© 2024 NITA CONNECT</span>
+                <span>© 2024 CAMPUS CONNECT</span>
                 <div className="flex items-center gap-1.5 border-l border-zinc-200 dark:border-zinc-800 pl-3">
                   <Globe size={11} className="animate-spin-slow" />
                   <span>Agartala, India</span>
@@ -111,4 +111,6 @@ const Footer = () => {
   );
 };
 
+
 export default Footer;
+
