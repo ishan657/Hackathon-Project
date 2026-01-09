@@ -30,7 +30,7 @@ const Footer = () => {
                   <Zap size={16} className="text-white dark:text-zinc-900 fill-current" />
                 </div>
                 <span className="text-lg font-black tracking-tighter text-zinc-900 dark:text-white uppercase italic">
-                  NITA CONNECT
+                  CAMPUS CONNECT
                 </span>
               </div>
               <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-xs mx-auto md:mx-0">
@@ -113,3 +113,4 @@ const Footer = () => {
 
 
 export default Footer;
+
