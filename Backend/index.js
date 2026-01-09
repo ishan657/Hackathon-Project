@@ -5,9 +5,15 @@ const { Server } = require('socket.io'); // Socket.io server
 const connectDB = require('./config/DB');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
+const notificationRoute = require('./routes/notificationRoutes');
 const socketHandler = require('./socket'); // Your new socket logic file
+const cors = require('cors');
 
 const app = express();
+app.use(cors({
+  origin: "http://localhost:5173", // Your React URL
+  credentials: true
+}));
 const server = http.createServer(app); // Wrap express app
 
 // Initialize Socket.io with CORS safety
@@ -27,6 +33,7 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/notifications',notificationRoute);
 
 // Initialize Socket Logic
 socketHandler(io);

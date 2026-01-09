@@ -1,25 +1,41 @@
-const User = require('../models/User');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const User = require("../models/User");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 exports.signup = async (req, res) => {
   // Destructure the NEW fields from req.body
-  const { 
-    name, email, password, 
-    age, gender, academicYear, // Added
-    bio, interests, hobbies, lookingFor 
+  const {
+    name,
+    email,
+    password,
+    age,
+    gender,
+    academicYear, // Added
+    bio,
+    interests,
+    hobbies,
+    lookingFor,
   } = req.body;
 
   try {
     // 1. Basic validation for Enums (Safety check)
-    const validGenders = ['Male', 'Female', 'Non-binary', 'Other'];
-    const validYears = ['1st Year', '2nd Year', '3rd Year', '4th Year', 'Masters', 'PhD'];
+    const validGenders = ["Male", "Female", "Non-binary", "Other"];
+    const validYears = [
+      "1st Year",
+      "2nd Year",
+      "3rd Year",
+      "4th Year",
+      "Masters",
+      "PhD",
+    ];
 
     if (!validGenders.includes(gender)) {
       return res.status(400).json({ msg: "Please select a valid gender" });
     }
     if (!validYears.includes(academicYear)) {
-      return res.status(400).json({ msg: "Please select a valid academic year" });
+      return res
+        .status(400)
+        .json({ msg: "Please select a valid academic year" });
     }
 
     // 2. Check if user already exists
@@ -31,23 +47,25 @@ exports.signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // 4. Create new user with campus fields
-    user = new User({ 
-      name, 
-      email, 
-      password: hashedPassword, 
-      age, 
-      gender, 
-      academicYear, 
-      bio, 
-      interests, 
-      hobbies, 
-      lookingFor 
+    user = new User({
+      name,
+      email,
+      password: hashedPassword,
+      age,
+      gender,
+      academicYear,
+      bio,
+      interests,
+      hobbies,
+      lookingFor,
     });
 
     await user.save();
 
     // 5. Generate Token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
 
     // Return token and user (excluding password)
     const userResponse = user.toObject();
@@ -63,13 +81,20 @@ exports.signup = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ msg: "Invalid Credentials" });
+    const user = await User.findOne({ email }).select("+password");
+    console.log("User found:", user ? "YES" : "NO");
+    if (user) {
+      console.log("Password from DB exists?:", !!user.password);
+      const isMatch = await bcrypt.compare(password, user.password);
+      console.log("Password match result:", isMatch);
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ msg: "Invalid Credentials" });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
 
     // Return user without password
     const userResponse = user.toObject();

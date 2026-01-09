@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
-  name: { type: String, required: true },
+  name: { type: String, required: true, unique : true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   
@@ -15,12 +15,11 @@ const UserSchema = new mongoose.Schema({
   academicYear: { 
     type: String, 
     required: true, 
-    enum: ['1st Year', '2nd Year', '3rd Year', '4th Year', 'Masters', 'PhD'] 
+    enum: ['1st Year', '2nd Year', '3rd Year', '4th Year',] 
   },
 
   bio: String,
   interests: [String],
-  hobbies: [String],
   lookingFor: String,
 
   // --- UPDATED FRIEND REQUESTS WITH ENUMS ---

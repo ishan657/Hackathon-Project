@@ -1,147 +1,195 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { 
-  Users, BookOpen, MapPin, Code, Search, MessageSquare, 
-  User, LogOut, Send, ArrowRight, ChevronLeft, X, 
-  CheckCircle2, Plus, Bell, Heart, Star, Sparkles, Loader2,
-  GraduationCap, MapPinIcon, Calendar, Info, Trophy, Mic, Activity, Flame, Zap,
-  MoreVertical, Phone, Video, Paperclip, Smile, Camera, Image as ImageIcon, Compass,
-  Lock, Moon,Sun,Tent, Clock, Github, Linkedin, AlertCircle
+  MessageSquare, User, LogOut, Bell, Moon, Sun, Zap, AlertCircle, 
+  CheckCircle2, MoreVertical, Lock, X, Check
 } from 'lucide-react';
 import Button from './ui/Button';
 
 const Navbar = ({ user, setPage, onLogout }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [showStatus, setShowStatus] = useState(false);
-  const [theme, setTheme] = useState('light'); // State
+  const [theme, setTheme] = useState('light');
+  const [notifications, setNotifications] = useState([]);
+
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Apply theme to the HTML element
   useEffect(() => {
     const root = window.document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
+    if (theme === 'dark') root.classList.add('dark');
+    else root.classList.remove('dark');
   }, [theme]);
 
-  // Toggle theme
-  const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
+  const fetchUpdates = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await axios.get('http://localhost:5000/api/notifications/recent', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      setNotifications(response.data);
+    } catch (err) {
+      console.error("Connection failed. Is the backend running on port 5000?", err.message);
+    }
   };
 
+  const handleAction = async (action, senderId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const endpoint = `http://localhost:5000/api/users/${action}/${senderId}`;
 
+      // Update local state immediately for instant UI feedback
+      setNotifications(prev => prev.map(n => {
+        if (n.sender?._id === senderId && n.type === 'SYSTEM_ALERT') {
+          return { ...n, type: action === 'accept' ? 'REQUEST_ACCEPTED' : 'REQUEST_REJECTED' };
+        }
+        return n;
+      }));
+
+      await axios.post(endpoint, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      // Refresh from server to ensure data consistency
+      await fetchUpdates();
+      
+      // Removed the setPage('chat') line to prevent redirection
+    } catch (err) {
+      console.error("Action error:", err);
+      fetchUpdates(); // Rollback UI if the server request fails
+    }
+  };
+
+  useEffect(() => {
+    if (user?._id) fetchUpdates();
+  }, [user?._id]);
+
+  const toggleTheme = () => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
 
   return (
-    // <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-    //   isScrolled ? 'bg-white/80 backdrop-blur-md py-3 shadow-sm' : 'bg-transparent py-6'
-    // }`}>
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300
       ${isScrolled 
         ? 'bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md py-3 shadow-sm' 
         : 'bg-transparent py-6'
       }`}
     >
-    
-
-
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => setPage('landing')}>
           <div className="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center">
             <Zap className="text-white w-5 h-5 fill-white" />
           </div>
           <span className="font-bold text-xl tracking-tight text-zinc-900 dark:text-zinc-100">
-          NITA Connect
-         </span>
-
-          {/* <span className="font-bold text-xl tracking-tight text-zinc-900">NITA Connect</span> */}
+            NITA Connect
+          </span>
         </div>
 
         {user ? (
           <div className="flex items-center gap-4 sm:gap-6">
             <div className="hidden md:flex items-center gap-6 mr-2">
-              <button onClick={() => setPage('dashboard')} className="text-sm font-bold text-zinc-900 dark:text-zinc-100 hover:text-zinc-900 dark:hover:text-white">Dashboard</button>
-              <button onClick={() => setPage('matches')} className="text-sm font-bold text-zinc-900 dark:text-zinc-100 hover:text-zinc-900 dark:hover:text-white">Explore</button>
+              <button onClick={() => setPage('dashboard')} className="text-sm font-bold text-zinc-900 dark:text-zinc-100 transition-colors">Dashboard</button>
+              <button onClick={() => setPage('matches')} className="text-sm font-bold text-zinc-900 dark:text-zinc-100 transition-colors">Explore</button>
             </div>
 
-             {/* Theme Toggle Button */}
-             <button
-              onClick={toggleTheme}
-              className="p-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full text-zinc-900 dark:text-zinc-100 relative transition-all active:scale-90"
-              title="Toggle Theme"
-            >
+            <button onClick={toggleTheme} className="p-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full text-zinc-900 dark:text-zinc-100 transition-all active:scale-90">
               {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
             </button>
 
-            {/* Request Status / Notification Icon */}
             <div className="relative">
               <button 
-                onClick={() => setShowStatus(!showStatus)}
-                className="p-2.5 hover:bg-zinc-100 rounded-full text-zinc-900 dark:text-zinc-100 relative transition-all active:scale-90"
-                title="Requests Status"
+                onClick={() => {
+                  setShowStatus(!showStatus);
+                  if (!showStatus) fetchUpdates(); 
+                }}
+                className="p-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full text-zinc-900 dark:text-zinc-100 relative transition-all active:scale-90"
               >
                 <Bell size={20} />
-                <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white animate-pulse"></span>
+                {notifications.length > 0 && (
+                  <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-blue-500 rounded-full border-2 border-white dark:border-zinc-950 animate-pulse"></span>
+                )}
               </button>
               
               {showStatus && (
-                <div className="absolute top-full right-0 mt-3 w-64 bg-white rounded-3xl shadow-2xl border border-zinc-100 p-4 animate-in fade-in slide-in-from-top-2 duration-200 z-[100]">
-                  <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-3 px-2">Recent Updates</h4>
-                  <div className="space-y-2">
-                    <div className="flex items-start gap-3 p-3 bg-emerald-50 rounded-2xl border border-emerald-100">
-                      <CheckCircle2 className="text-emerald-500 w-4 h-4 mt-0.5" />
-                      <div>
-                        <p className="text-xs font-bold text-emerald-900">Request Accepted</p>
-                        <p className="text-[10px] text-emerald-600">Sneha accepted your coding invite.</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 p-3 bg-red-50 rounded-2xl border border-red-100">
-                      <AlertCircle className="text-red-500 w-4 h-4 mt-0.5" />
-                      <div>
-                        <p className="text-xs font-bold text-red-900">Request Declined</p>
-                        <p className="text-[10px] text-red-600">Library buddy session rejected.</p>
-                      </div>
-                    </div>
+                <div className="absolute top-full right-0 mt-3 w-80 bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl border border-zinc-100 dark:border-zinc-800 p-4 animate-in fade-in slide-in-from-top-2 duration-200 z-[100]">
+                  <h4 className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.2em] mb-3 px-2">Recent Updates</h4>
+                  <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+                    {notifications.length === 0 ? (
+                      <p className="text-[10px] text-zinc-400 text-center py-4 italic">No updates yet</p>
+                    ) : (
+                      notifications.map((notif) => (
+                        <div key={notif._id} className="group relative p-3 rounded-2xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 transition-all">
+                          <div className="flex items-start gap-3">
+                            <div className="w-8 h-8 rounded-full bg-zinc-100 overflow-hidden flex-shrink-0">
+                               <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${notif.sender?.name}`} alt="avatar" />
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100">
+                                {notif.sender?.name} <span className="font-normal opacity-70">
+                                  {notif.type === 'REQUEST_ACCEPTED' ? 'friend request accepted' : 
+                                   notif.type === 'REQUEST_REJECTED' ? 'friend request rejected' : 'sent a request'}
+                                </span>
+                              </p>
+
+                              <div className="hidden group-hover:block mt-2 p-2 bg-white dark:bg-zinc-800 rounded-lg border border-zinc-100 dark:border-zinc-700 shadow-sm transition-all">
+                                <p className="text-[9px] font-black text-blue-500 uppercase mb-1">Looking For</p>
+                                <p className="text-[10px] italic text-zinc-500 dark:text-zinc-400 leading-tight">
+                                  "{notif.sender?.lookingFor || 'Exploring tribes'}"
+                                </p>
+                              </div>
+
+                              {notif.type === 'SYSTEM_ALERT' && (
+                                <div className="flex gap-2 mt-3">
+                                  <button onClick={() => handleAction('accept', notif.sender?._id)} className="flex-1 py-1.5 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-[10px] font-bold rounded-lg flex items-center justify-center gap-1">
+                                    <Check size={12} /> Accept
+                                  </button>
+                                  <button onClick={() => handleAction('reject', notif.sender?._id)} className="px-3 py-1.5 border border-zinc-200 dark:border-zinc-700 text-zinc-500 text-[10px] font-bold rounded-lg hover:text-red-500">
+                                    <X size={12} />
+                                  </button>
+                                </div>
+                              )}
+
+                              {notif.type === 'REQUEST_ACCEPTED' && (
+                                <button onClick={() => setPage('chat')} className="w-full mt-2 py-1 text-[10px] font-bold text-blue-500 flex items-center gap-1 justify-center border border-blue-500/20 rounded-lg hover:bg-blue-500/5">
+                                   Send Hi
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               )}
             </div>
 
-            <button onClick={() => setPage('chat')} className="p-2.5 hover:bg-zinc-100 rounded-full text-zinc-900 dark:text-zinc-100 relative transition-all active:scale-90">
+            <button onClick={() => setPage('chat')} className="p-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full text-zinc-900 dark:text-zinc-100 transition-all active:scale-90">
               <MessageSquare size={20} />
-
             </button>
 
-            <div className="h-8 w-[1px] bg-zinc-200 hidden sm:block"></div>
+            <div className="h-8 w-[1px] bg-zinc-200 dark:bg-zinc-800 hidden sm:block"></div>
 
             <div className="flex items-center gap-3 group cursor-pointer" onClick={() => setPage('onboarding')}>
               <div className="text-right hidden lg:block">
                 <p className="text-sm font-bold text-zinc-500 dark:text-zinc-100 leading-none">{user.name || 'NITian'}</p>
                 <p className="text-[10px] font-bold text-zinc-400 uppercase mt-1 tracking-widest">Profile</p>
               </div>
-              <div className="w-10 h-10 rounded-full border-2 border-white shadow-sm overflow-hidden bg-zinc-100 hover:ring-2 hover:ring-zinc-900 transition-all">
-                <img src={user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=NITA`} alt="Profile" className="w-full h-full object-cover" />
+              <div className="w-10 h-10 rounded-full border-2 border-white dark:border-zinc-800 shadow-sm overflow-hidden bg-zinc-100 hover:ring-2 hover:ring-zinc-900 transition-all">
+                <img src={user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`} alt="Profile" className="w-full h-full object-cover" />
               </div>
             </div>
 
-            {/* Tree Dot / More Menu Button */}
             <div className="relative group">
-              <button className="p-2.5 hover:bg-zinc-100 rounded-full text-zinc-600 transition-all active:scale-90">
+              <button className="p-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full text-zinc-600 dark:text-zinc-400 transition-all active:scale-90">
                 <MoreVertical size={20} />
               </button>
-              <div className="absolute top-full right-0 mt-3 w-48 bg-white rounded-2xl shadow-xl border border-zinc-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] py-2">
-                <button className="w-full text-left px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 flex items-center gap-3">
-                  <User size={16} /> Account
-                </button>
-                <button className="w-full text-left px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 flex items-center gap-3">
-                  <Lock size={16} /> Privacy
-                </button>
-                <div className="h-[1px] bg-zinc-100 my-1 mx-2"></div>
-                <button onClick={onLogout} className="w-full text-left px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 flex items-center gap-3">
+              <div className="absolute top-full right-0 mt-3 w-48 bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-zinc-100 dark:border-zinc-800 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] py-2">
+                <button onClick={onLogout} className="w-full text-left px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-3">
                   <LogOut size={16} /> Logout
                 </button>
               </div>
@@ -149,7 +197,7 @@ const Navbar = ({ user, setPage, onLogout }) => {
           </div>
         ) : (
           <div className="flex items-center gap-4">
-            <Button variant="ghost" className="px-4" onClick={() => setPage('login')}>Login</Button>
+            <Button variant="ghost" className="px-4 dark:text-white" onClick={() => setPage('login')}>Login</Button>
             <Button variant="primary" onClick={() => setPage('login')}>Join NITA</Button>
           </div>
         )}

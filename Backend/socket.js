@@ -24,6 +24,24 @@ const socketHandler = (io) => {
       socket.join(room);
       console.log(`✅ SUCCESS: Socket ${socket.id} joined room: [${room}]`);
     });
+    // Example: When a user rejects a request
+socket.on("respond_to_request", async (data) => {
+  const { requestId, status, senderId, recipientId } = data;
+
+  // 1. Logic to update the Request record in DB...
+
+  // 2. Create the Notification in DB
+  const update = new Notification({
+    recipient: senderId, // The person who originally sent the request
+    sender: recipientId,  // You (the one rejecting/accepting)
+    type: status === 'rejected' ? 'REQUEST_REJECTED' : 'REQUEST_ACCEPTED',
+    content: `Your request was ${status} by the student.`
+  });
+  await update.save();
+
+  // 3. Emit live to the recipient if they are online
+  io.to(senderId.toString()).emit("new_update", update);
+});
 
     // 2. Handle sending a live message
     socket.on("send_message", async (data) => {

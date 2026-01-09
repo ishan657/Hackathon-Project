@@ -1,135 +1,149 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Users, BookOpen, MapPin, Code, Search, MessageSquare, 
-  User, LogOut, Send, ArrowRight, ChevronLeft, X, 
-  CheckCircle2, Plus, Bell, Heart, Star, Sparkles, Loader2,
-  GraduationCap, MapPinIcon, Calendar, Info, Trophy, Mic, Activity, Flame, Zap,
-  MoreVertical, Phone, Video, Paperclip, Smile, Camera, Image as ImageIcon, Compass,
-  Lock, Tent, Clock, Github, Linkedin, AlertCircle
-} from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
-import LandingPage from './components/LandingPage';
-import OnboardingForm from './components/OnboardingForm';
-import Dashboard from './components/Dashboard';
-import LoginPage from './components/LoginPage';
+import LandingPage from './pages/LandingPage';
+import OnboardingForm from './pages/OnboardingForm';
+import Dashboard from './pages/Dashboard';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage'; 
 import ChatPage from './components/ChatPage';
-import MatchesPage from './components/MatchesPage';
+import MatchesPage from './pages/MatchesPage';
 import Footer from './components/Footer';
 import Button from './components/ui/Button';
-import InputField from './components/ui/InputField';
-
-/**
- * NITA Connect - NIT Agartala Exclusive
- * Updated: Navbar with Notification Status (Accepted/Rejected) and More (Three-dot) Menu.
- */
-
-
-
-
-
-
-
-
-
-// --- App Root ---
 
 export default function App() {
   const [page, setPage] = useState('landing');
   const [user, setUser] = useState(null);
   const [showReason, setShowReason] = useState(false);
-  const startExploringWithReason = () => {
-    setPage("matches");      // show matches immediately
-    setShowReason(true);     // show Gemini reason popup
-  };
+  const [signupData, setSignupData] = useState(null);
   
+  // NEW STATE: Holds the AI matches globally
+  const [aiMatches, setAiMatches] = useState([]);
 
-  // const handleLogin = (enrollment) => {
-  //   const mockUser = {
-  //     uid: enrollment || 'nita-user-123',
-  //     name: enrollment || 'NITA Student',
-  //     avatar: null,
-  //     interests: []
-  //   };
-  //   setUser(mockUser);
-  //   setPage('onboarding');
-  // };
-  const handleLogin = () => {
-    // 🔴 TEMPORARY DUMMY AUTH
-    setUser({
-      id: "dummy-user",
-      name: "NITA Student",
-    });
-  
-    setPage("onboarding"); // move forward
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
+    if (savedUser && token) {
+      setUser(JSON.parse(savedUser));
+      setPage('dashboard');
+    }
+  }, []);
+
+  // UPDATED: Now accepts matches data from the Dashboard
+  const startExploringWithReason = (matches) => {
+    setAiMatches(matches); // Save the JSON data
+    setPage("matches");      
+    setShowReason(true);     
   };
-  
+
+  const handleLogin = (loggedInUser) => {
+    setUser(loggedInUser);
+    if (!loggedInUser.bio) {
+      setPage("onboarding");
+    } else {
+      setPage("dashboard"); 
+    }
+  };
+
+  const handleSignupStepOne = (data) => {
+    setSignupData(data);
+    setPage('onboarding');
+  };
 
   const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setUser(null);
+    setSignupData(null);
+    setAiMatches([]); // Clear matches on logout
     setPage('landing');
   };
 
   return (
-    // <div className="min-h-screen bg-[#FAF9F6] font-sans selection:bg-zinc-900 selection:text-white">
-    // <div className="min-h-screen bg-[#FAF9F6] dark:bg-zinc-950">
     <div className="min-h-screen bg-[#FAF9F6] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
-
-
-      
       <Navbar user={user} setPage={setPage} onLogout={handleLogout} />
       
       <main className="pt-24 flex-1">
         {page === 'landing' && <LandingPage setPage={setPage} user={user} />}
         
-        {page === 'login' && <LoginPage onLogin={handleLogin} />}
-
-        {page === 'onboarding' && <OnboardingForm setGlobalUser={setUser} onComplete={() => setPage('dashboard')} />}
-        {/* {page === 'dashboard' && <Dashboard user={user} setPage={setPage} />} */}
-        {page === "dashboard" && (
-          <Dashboard
-          user={user}
-          setPage={setPage}
-          onStartExploring={startExploringWithReason}
+        {page === 'login' && (
+          <LoginPage 
+            onLogin={handleLogin} 
+            onGoSignup={() => {
+              setSignupData(null);
+              setPage('signup');
+            }} 
           />
-         )}
-
-        {page === 'chat' && <ChatPage setPage={setPage} />}
-        {page === 'matches' && <MatchesPage setPage={setPage} />}
-        {showReason && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-    <div className="bg-white w-[90%] max-w-md rounded-2xl p-6 shadow-xl">
-
-      <h2 className="text-xl font-semibold text-zinc-900 mb-2">
-        🤖 Why Gemini recommended these matches
-      </h2>
-
-      <p className="text-sm text-zinc-600 mb-4">
-        Gemini analyzed your profile and activity to find the most relevant matches.
-      </p>
-
-      <ul className="space-y-2 text-sm text-zinc-700">
-        <li>• Strong overlap with your interests</li>
-        <li>• Similar activity and engagement level</li>
-        <li>• High compatibility with your goals</li>
-      </ul>
-
-      <div className="mt-6 flex justify-end">
-        <Button
-          onClick={() => setShowReason(false)}
-          className="bg-zinc-900 text-white rounded-xl px-6"
-        >
-          Got it
-        </Button>
-      </div>
-
-    </div>
-  </div>
         )}
 
+        {page === 'signup' && (
+          <SignupPage 
+            onSignupSuccess={handleSignupStepOne} 
+            onGoLogin={() => {
+              setSignupData(null);
+              setPage('login');
+            }} 
+          />
+        )}
+
+        {page === 'onboarding' && (
+          <OnboardingForm 
+            signupData={signupData} 
+            setGlobalUser={setUser} 
+            onComplete={() => {
+              setSignupData(null);
+              setPage('dashboard');
+            }} 
+          />
+        )}
+
+        {page === "dashboard" && (
+          <Dashboard
+            user={user}
+            setPage={setPage}
+            // Dashboard now sends data back up to this component
+            onStartExploring={startExploringWithReason}
+          />
+        )}
+
+        {page === 'chat' && <ChatPage setPage={setPage} user={user} />}
+        
+        {/* UPDATED: Pass the global aiMatches state to the matches page */}
+        {page === 'matches' && (
+          <MatchesPage 
+            setPage={setPage} 
+            user={user} 
+            aiMatches={aiMatches} 
+          />
+        )}
+        
+        {showReason && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+            <div className="bg-white w-full max-w-md rounded-2xl p-6 shadow-xl text-zinc-900">
+              <h2 className="text-xl font-semibold mb-2">
+                🤖 Why Gemini recommended these matches
+              </h2>
+              <p className="text-sm text-zinc-600 mb-4">
+                Gemini analyzed your profile and activity to find the most relevant matches.
+              </p>
+              <ul className="space-y-2 text-sm text-zinc-700 font-medium">
+                <li>• Strong overlap with your interests</li>
+                <li>• Similar academic year ({user?.academicYear})</li>
+                <li>• High compatibility with your goals</li>
+              </ul>
+              <div className="mt-6 flex justify-end">
+                <Button
+                  onClick={() => setShowReason(false)}
+                  className="bg-zinc-900 text-white rounded-xl px-6"
+                >
+                  Got it
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
 
       <Footer />
     </div>
   );
-
 }
