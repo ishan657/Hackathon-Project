@@ -32,7 +32,7 @@ export default function LoginPage({ onLogin, onGoSignup }) {
     } catch (err) {
       console.error("Login Error:", err);
       // Fallback message if Render is still "waking up"
-      setError(err.response?.data?.msg || "Server is waking up or credentials invalid. Please wait 30s and try again.");
+      setError(err.response?.data?.msg || "credentials invalid , try again.");
     } finally {
       setLoading(false);
     }
