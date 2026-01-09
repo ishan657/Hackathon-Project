@@ -13,14 +13,23 @@ const messageRoutes = require("./routes/messageRoutes");
 const app = express();
 
 // 1. Standard Express CORS
+const cors = require("cors");
+
+// Place this BEFORE any routes
 app.use(
   cors({
-    origin: true, // Dynamically allow any origin that hits the server
+    origin: function (origin, callback) {
+      // This allows any origin to connect (Vercel, localhost, etc.)
+      return callback(null, true);
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// Add this right after the cors middleware
+app.options("*", cors());
 
 // 2. IMPORTANT: Handle the 'OPTIONS' preflight manually just in case
 app.options("*", cors());
