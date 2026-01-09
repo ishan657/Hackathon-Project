@@ -7,7 +7,6 @@ import {
   Moon,
   Sun,
   Zap,
-  MoreVertical,
   X,
   Check,
 } from "lucide-react";
@@ -142,7 +141,7 @@ const Navbar = ({ user, setPage, onLogout, setActiveChatFriend }) => {
           <div className="flex items-center gap-4 sm:gap-6">
             <div className="hidden md:flex items-center gap-6 mr-2 text-zinc-900 dark:text-zinc-100 font-bold text-sm">
               <button onClick={() => setPage("dashboard")}>Dashboard</button>
-              <button onClick={() => setPage("matches")}>Explore</button>
+              <button onClick={() => setPage("explore")}>Explore</button>
             </div>
 
             <button onClick={toggleTheme} className="p-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full text-zinc-900 dark:text-zinc-100 transition-all">
@@ -228,7 +227,81 @@ const Navbar = ({ user, setPage, onLogout, setActiveChatFriend }) => {
 
             <div className="h-8 w-[1px] bg-zinc-200 dark:bg-zinc-800 hidden sm:block"></div>
 
-            <div className="flex items-center gap-3 group cursor-pointer" onClick={() => setPage("onboarding")}>
+            <div className="relative group">
+  {/* Profile Trigger */}
+  <div className="flex items-center gap-3 cursor-pointer">
+    <div className="text-right hidden lg:block">
+      <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+        {user.name || "NITian"}
+      </p>
+      <p className="text-[10px] uppercase tracking-widest text-zinc-400">
+        {user.branch || "Student"}
+      </p>
+    </div>
+
+    <div className="w-10 h-10 rounded-full border-2 border-white dark:border-zinc-800 shadow-sm overflow-hidden bg-zinc-100">
+      <img
+        src={
+          user.avatar ||
+          `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`
+        }
+        alt="Profile"
+        className="w-full h-full object-cover"
+      />
+    </div>
+  </div>
+
+  {/* Hover Card */}
+  <div className="absolute right-0 top-full mt-4 w-80 bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl border border-zinc-100 dark:border-zinc-800 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100]">
+
+    {/* User Info */}
+    <div className="p-4 border-b border-zinc-100 dark:border-zinc-800">
+      <p className="text-sm font-bold">{user.name}</p>
+      <p className="text-xs text-zinc-500 mt-1 line-clamp-2">
+        {user.bio || "No bio added yet"}
+      </p>
+    </div>
+
+    {/* Friends Preview */}
+    <div className="p-4">
+      <p className="text-[10px] uppercase tracking-widest font-bold text-zinc-400 mb-3">
+        Friends
+      </p>
+
+      <div className="flex -space-x-3 mb-4">
+        {(user.friends || []).slice(0, 5).map((friend, i) => (
+          <img
+            key={i}
+            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${friend.name}`}
+            className="w-8 h-8 rounded-full border-2 border-white dark:border-zinc-900 bg-zinc-100"
+          />
+        ))}
+
+        {(!user.friends || user.friends.length === 0) && (
+          <p className="text-xs text-zinc-500">No friends yet</p>
+        )}
+      </div>
+
+      {/* Actions */}
+      <button
+        onClick={() => setPage("onboarding")}
+        className="w-full mb-2 py-2 text-sm font-semibold rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 transition"
+      >
+        Edit Profile
+      </button>
+
+      <button
+        onClick={onLogout}
+        className="w-full py-2 text-sm font-semibold rounded-xl text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+      >
+        Logout
+      </button>
+    </div>
+  </div>
+</div>
+
+
+            {/* <div className="flex items-center gap-3 group cursor-pointer" onClick={() => setPage("onboarding")}>
               <div className="text-right hidden lg:block text-zinc-900 dark:text-zinc-100">
                 <p className="text-sm font-bold leading-none">{user.name || "NITian"}</p>
                 <p className="text-[10px] font-bold text-zinc-400 uppercase mt-1 tracking-widest">Profile</p>
@@ -236,9 +309,9 @@ const Navbar = ({ user, setPage, onLogout, setActiveChatFriend }) => {
               <div className="w-10 h-10 rounded-full border-2 border-white dark:border-zinc-800 shadow-sm overflow-hidden bg-zinc-100 hover:ring-2 hover:ring-zinc-900 transition-all">
                 <img src={user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`} alt="Profile" className="w-full h-full object-cover" />
               </div>
-            </div>
+            </div> */}
 
-            <div className="relative group">
+            {/* <div className="relative group">
               <button className="p-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full text-zinc-600 dark:text-zinc-400 transition-all">
                 <MoreVertical size={20} />
               </button>
@@ -247,7 +320,7 @@ const Navbar = ({ user, setPage, onLogout, setActiveChatFriend }) => {
                   <LogOut size={16} /> Logout
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
         ) : (
           <div className="flex items-center gap-4">

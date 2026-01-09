@@ -7,6 +7,8 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage'; 
 import ChatPage from './components/chat/ChatInterface';
 import MatchesPage from './pages/MatchesPage';
+import ExplorePage from './pages/ExplorePage';
+
 import Footer from './components/Footer';
 import Button from './components/ui/Button';
 
@@ -106,6 +108,9 @@ export default function App() {
         )}
 
         {page === 'chat' && <ChatPage setPage={setPage} user={user} />}
+        {page === 'explore' && (
+          <ExplorePage />
+        )}
         
         {/* UPDATED: Pass the global aiMatches state to the matches page */}
         {page === 'matches' && (
@@ -142,8 +147,8 @@ export default function App() {
           </div>
         )}
       </main>
-
-      <Footer />
+      {page !== 'chat' && <Footer />}
+      {/* <Footer /> */}
     </div>
   );
 }
