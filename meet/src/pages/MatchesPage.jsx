@@ -54,7 +54,7 @@ const MatchesPage = ({ aiMatches = [], setPage, user }) => {
         <div className="space-y-1">
           <h2 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
             Your <span className="text-blue-500 italic font-serif">Gemini</span>{" "}
-            Tribe
+            partner
           </h2>
           <p className="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.2em]">
             Top 3 AI Recommendations
