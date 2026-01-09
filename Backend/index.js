@@ -12,8 +12,8 @@ const messageRoutes = require('./routes/messageRoutes');
 
 const app = express();
 app.use(cors({
-  origin: "http://localhost:5173", // Your React URL
-  credentials: true
+  origin: true,
+  credentials :true,
 }));
 const server = http.createServer(app); // Wrap express app
 
@@ -50,7 +50,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = 5001;
 
 // IMPORTANT: Listen on 'server', not 'app'
 server.listen(PORT, () => {

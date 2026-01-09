@@ -39,18 +39,21 @@ const Navbar = ({ user, setPage, onLogout, setActiveChatFriend }) => {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const response = await axios.get(
-        "http://localhost:5000/api/notifications/recent",
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      // Fetch notifications
+      const response = await axios.get('http://localhost:5000/api/notifications/recent', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setNotifications(response.data);
 
-      const chatRes = await axios.get(
-        "http://localhost:5000/api/users/my-friends",
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      const unread = chatRes.data.some((f) => f.unreadCount > 0);
+      // Fetch friends/chats to check for new messages
+      // Note: Assuming your friends endpoint returns a "hasUnread" or similar field
+      const chatRes = await axios.get('http://localhost:5000/api/users/my-friends', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      // Logic: If any friend has a lastMessage that is newer than your last visit to chat
+      // For now, checking if any conversation has unread status
+      const unread = chatRes.data.some(f => f.unreadCount > 0);
       setHasUnreadChats(unread);
     } catch (err) {
       console.error("Fetch failed:", err.message);
@@ -75,18 +78,10 @@ const Navbar = ({ user, setPage, onLogout, setActiveChatFriend }) => {
     );
 
     try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        `http://localhost:5000/api/users/${action}/${senderId}`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      // FIX: Changed 200000ms (3.3 mins) to 2000ms (2 seconds)
-      setTimeout(async () => {
-        await fetchUpdates();
-        setProcessingIds((prev) => prev.filter((id) => id !== senderId));
-      }, 2000);
+      const token = localStorage.getItem('token');
+      const endpoint = `http://localhost:5000/api/users/${action}/${senderId}`;
+      await axios.post(endpoint, {}, { headers: { Authorization: `Bearer ${token}` } });
+      setTimeout(() => fetchUpdates(), 500); 
     } catch (err) {
       console.error("Action failed", err);
       setProcessingIds((prev) => prev.filter((id) => id !== senderId));
