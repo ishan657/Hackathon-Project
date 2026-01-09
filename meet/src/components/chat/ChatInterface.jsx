@@ -7,12 +7,19 @@ import {
   Search, MoreVertical, CheckCheck 
 } from 'lucide-react';
 
-// Initialize Socket.io connection
-const socket = io('https://hackathon-project-owg6.onrender.com');
+// Dynamic API URL for Vercel/Render compatibility
+const API_URL = import.meta.env.VITE_API_URL || "https://hackathon-project-owg6.onrender.com";
+
+// Initialize Socket.io connection with polling fallback for Render stability
+const socket = io(API_URL, {
+  transports: ['websocket', 'polling'],
+  withCredentials: true
+});
+
 // MUST match your backend secret
 const SECRET_KEY = "your_very_secret_key"; 
 
-const ChatInterface = ({ user, setPage }) => {
+const ChatInterface = ({ user, setPage, activeChatFriend, setActiveChatFriend }) => {
   const [friends, setFriends] = useState([]);
   const [activeFriend, setActiveFriend] = useState(null);
   const [message, setMessage] = useState("");
@@ -34,15 +41,25 @@ const ChatInterface = ({ user, setPage }) => {
     }
   };
 
-  // --- 2. FETCH FRIENDS LIST ---
+  // --- 2. FETCH FRIENDS LIST & HANDLE REDIRECT ---
   useEffect(() => {
     const fetchFriends = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('https://hackathon-project-owg6.onrender.com/api/users/my-friends', {
+        const res = await axios.get(`${API_URL}/api/users/my-friends`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setFriends(res.data);
+
+        // If redirected from "Send Hi" in Navbar
+        if (activeChatFriend) {
+          const friendInList = res.data.find(f => f._id === activeChatFriend._id);
+          if (friendInList) {
+            setActiveFriend(friendInList);
+          } else {
+            setActiveFriend(activeChatFriend);
+          }
+        }
       } catch (err) {
         console.error("Error fetching friends:", err);
       } finally {
@@ -50,7 +67,7 @@ const ChatInterface = ({ user, setPage }) => {
       }
     };
     fetchFriends();
-  }, []);
+  }, [activeChatFriend]); // Re-run if a new friend is selected from Navbar
 
   // --- 3. SOCKET & MESSAGE HISTORY ---
   useEffect(() => {
@@ -62,7 +79,7 @@ const ChatInterface = ({ user, setPage }) => {
     const fetchMessages = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get(`https://hackathon-project-owg6.onrender.com/api/messages/${activeFriend.conversationId}`, {
+        const res = await axios.get(`${API_URL}/api/messages/${activeFriend.conversationId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         
@@ -80,12 +97,14 @@ const ChatInterface = ({ user, setPage }) => {
 
     // Listen for live messages
     socket.on('receive_message', (data) => {
-      // Data matches backend: { sender, encryptedText, iv, createdAt }
-      const decryptedMsg = {
-        ...data,
-        text: decryptText(data.encryptedText, data.iv)
-      };
-      setChatHistory((prev) => [...prev, decryptedMsg]);
+      // Only add to history if it belongs to current active conversation
+      if (data.conversationId === activeFriend.conversationId) {
+        const decryptedMsg = {
+          ...data,
+          text: decryptText(data.encryptedText, data.iv)
+        };
+        setChatHistory((prev) => [...prev, decryptedMsg]);
+      }
     });
 
     return () => {
@@ -100,7 +119,7 @@ const ChatInterface = ({ user, setPage }) => {
   // --- 4. SEND MESSAGE (SOCKET ONLY) ---
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    if (!message.trim() || !activeFriend) return;
 
     const iv = CryptoJS.lib.WordArray.random(16).toString();
     const encrypted = CryptoJS.AES.encrypt(message, SECRET_KEY, {
@@ -114,11 +133,9 @@ const ChatInterface = ({ user, setPage }) => {
       iv: iv
     };
 
-    // We ONLY emit via socket. 
-    // Your backend socketHandler handles the DB saving automatically.
+    // Emit live via socket - backend handles persistence
     socket.emit('send_message', messageData);
     
-    // Clear input
     setMessage("");
   };
 
@@ -138,7 +155,10 @@ const ChatInterface = ({ user, setPage }) => {
             friends.map(friend => (
               <div
                 key={friend._id}
-                onClick={() => setActiveFriend(friend)}
+                onClick={() => {
+                   setActiveFriend(friend);
+                   if(setActiveChatFriend) setActiveChatFriend(null); // Clear global state once selected
+                }}
                 className={`p-4 flex items-center gap-3 cursor-pointer transition-all hover:bg-zinc-50 dark:hover:bg-zinc-900 ${activeFriend?._id === friend._id ? 'bg-zinc-100 dark:bg-zinc-800' : ''}`}
               >
                 <div className="w-12 h-12 rounded-full bg-zinc-200 overflow-hidden border-2 border-white dark:border-zinc-700">

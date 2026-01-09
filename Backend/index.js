@@ -12,35 +12,26 @@ const messageRoutes = require('./routes/messageRoutes');
 
 const app = express();
 
-// 1. Setup CORS allowed origins
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://hackathon-project-eight-pied.vercel.app/" // Add your actual frontend URL here later
-];
-
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      return callback(new Error('CORS policy violation'), false);
-    }
-    return callback(null, true);
+  origin: (origin, callback) => {
+    callback(null, true);
   },
-  credentials: true,
+  credentials: true
 }));
 
-const server = http.createServer(app); 
-
-// 2. Initialize Socket.io with enhanced CORS safety
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
+    // This function tells the socket to accept ANY origin that hits it
+    origin: (origin, callback) => {
+      callback(null, true);
+    },
     methods: ["GET", "POST"],
-    credentials: true // Crucial for handshake success
+    credentials: true
   },
-  transports: ['websocket', 'polling'] // Allow fallback
+  allowEIO3: true // Helps with version compatibility
 });
+
+const server = http.createServer(app); 
 
 // Connect to MongoDB
 connectDB();

@@ -4,11 +4,13 @@ import axios from "axios";
 
 export default function LoginPage({ onLogin, onGoSignup }) {
   const [showPassword, setShowPassword] = useState(false);
-  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+ 
+  const API_URL = import.meta.env.VITE_API_URL || "https://hackathon-project-owg6.onrender.com";
 
   const handleLogin = async (e) => {
     e.preventDefault(); 
@@ -16,7 +18,8 @@ export default function LoginPage({ onLogin, onGoSignup }) {
     setError("");
 
     try {
-      const response = await axios.post("https://hackathon-project-owg6.onrender.com/api/auth/login", {
+      // Using the dynamic API_URL variable
+      const response = await axios.post(`${API_URL}/api/auth/login`, {
         email, 
         password
       });
@@ -28,7 +31,8 @@ export default function LoginPage({ onLogin, onGoSignup }) {
       }
     } catch (err) {
       console.error("Login Error:", err);
-      setError(err.response?.data?.msg || "Invalid credentials. Try again.");
+      // Fallback message if Render is still "waking up"
+      setError(err.response?.data?.msg || "Server is waking up or credentials invalid. Please wait 30s and try again.");
     } finally {
       setLoading(false);
     }
@@ -40,7 +44,7 @@ export default function LoginPage({ onLogin, onGoSignup }) {
         
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-zinc-900 tracking-tight">
-            NITA Connect
+            CAMPUS CONNECT
           </h1>
           <p className="text-zinc-500 mt-2 text-sm">
             Connect • Collaborate • Grow
@@ -64,7 +68,7 @@ export default function LoginPage({ onLogin, onGoSignup }) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email or enrollment"
-              className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 transition-all dark:bg-white dark:text-zinc-900"
+              className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 transition-all"
             />
           </div>
 
@@ -79,7 +83,7 @@ export default function LoginPage({ onLogin, onGoSignup }) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm pr-12 focus:outline-none focus:ring-2 focus:ring-zinc-900 transition-all dark:bg-white dark:text-zinc-900"
+                className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm pr-12 focus:outline-none focus:ring-2 focus:ring-zinc-900 transition-all"
               />
               <button
                 type="button"
@@ -98,31 +102,13 @@ export default function LoginPage({ onLogin, onGoSignup }) {
           >
             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Login"}
           </button>
-
-          <div className="flex items-center gap-3 text-zinc-400 text-sm">
-            <div className="h-px bg-zinc-200 flex-1" />
-            OR
-            <div className="h-px bg-zinc-200 flex-1" />
-          </div>
-
-          <button
-            type="button"
-            className="w-full rounded-xl border border-zinc-300 py-3 font-medium flex items-center justify-center gap-3 hover:bg-zinc-50 transition text-zinc-900"
-          >
-            <img
-              src="https://www.svgrepo.com/show/475656/google-color.svg"
-              alt="google"
-              className="w-5 h-5"
-            />
-            Continue with Google
-          </button>
         </form>
 
         <p className="text-center text-sm text-zinc-600 mt-8">
           Don’t have an account?{" "}
           <button
             type="button"
-            onClick={onGoSignup} // Linked to redirection logic
+            onClick={onGoSignup}
             className="font-semibold text-zinc-900 hover:underline"
           >
             Sign up
