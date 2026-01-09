@@ -8,6 +8,7 @@ const userRoutes = require('./routes/userRoutes');
 const notificationRoute = require('./routes/notificationRoutes');
 const socketHandler = require('./socket'); // Your new socket logic file
 const cors = require('cors');
+const messageRoutes = require('./routes/messageRoutes');
 
 const app = express();
 app.use(cors({
@@ -34,6 +35,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/notifications',notificationRoute);
+app.use('/api/messages', messageRoutes);
 
 // Initialize Socket Logic
 socketHandler(io);

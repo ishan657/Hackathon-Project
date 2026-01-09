@@ -5,7 +5,7 @@ import OnboardingForm from './pages/OnboardingForm';
 import Dashboard from './pages/Dashboard';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage'; 
-import ChatPage from './components/ChatPage';
+import ChatPage from './components/chat/ChatInterface';
 import MatchesPage from './pages/MatchesPage';
 import Footer from './components/Footer';
 import Button from './components/ui/Button';

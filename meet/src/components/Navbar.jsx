@@ -11,6 +11,8 @@ const Navbar = ({ user, setPage, onLogout }) => {
   const [showStatus, setShowStatus] = useState(false);
   const [theme, setTheme] = useState('light');
   const [notifications, setNotifications] = useState([]);
+  // New state for chat notifications
+  const [hasUnreadChats, setHasUnreadChats] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -29,45 +31,58 @@ const Navbar = ({ user, setPage, onLogout }) => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
+      // Fetch notifications
       const response = await axios.get('http://localhost:5000/api/notifications/recent', {
         headers: { Authorization: `Bearer ${token}` }
       });
-
       setNotifications(response.data);
+
+      // Fetch friends/chats to check for new messages
+      // Note: Assuming your friends endpoint returns a "hasUnread" or similar field
+      const chatRes = await axios.get('http://localhost:5000/api/users/my-friends', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      // Logic: If any friend has a lastMessage that is newer than your last visit to chat
+      // For now, checking if any conversation has unread status
+      const unread = chatRes.data.some(f => f.unreadCount > 0);
+      setHasUnreadChats(unread);
+
     } catch (err) {
-      console.error("Connection failed. Is the backend running on port 5000?", err.message);
+      console.error("Connection failed.", err.message);
     }
   };
 
   const handleAction = async (action, senderId) => {
+    setNotifications(prev => prev.map(n => {
+      if (n.sender?._id === senderId && n.type === 'SYSTEM_ALERT') {
+        return { 
+          ...n, 
+          type: action === 'accept' ? 'REQUEST_ACCEPTED' : 'REQUEST_REJECTED',
+          isProcessed: true 
+        };
+      }
+      return n;
+    }));
+
     try {
       const token = localStorage.getItem('token');
       const endpoint = `http://localhost:5000/api/users/${action}/${senderId}`;
-
-      // Update local state immediately for instant UI feedback
-      setNotifications(prev => prev.map(n => {
-        if (n.sender?._id === senderId && n.type === 'SYSTEM_ALERT') {
-          return { ...n, type: action === 'accept' ? 'REQUEST_ACCEPTED' : 'REQUEST_REJECTED' };
-        }
-        return n;
-      }));
-
-      await axios.post(endpoint, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
-      // Refresh from server to ensure data consistency
-      await fetchUpdates();
-      
-      // Removed the setPage('chat') line to prevent redirection
+      await axios.post(endpoint, {}, { headers: { Authorization: `Bearer ${token}` } });
+      setTimeout(() => fetchUpdates(), 500); 
     } catch (err) {
       console.error("Action error:", err);
-      fetchUpdates(); // Rollback UI if the server request fails
+      fetchUpdates(); 
     }
   };
-
+  
   useEffect(() => {
-    if (user?._id) fetchUpdates();
+    if (user?._id) {
+        fetchUpdates();
+        // Set an interval to check for new chats/notifications every 30 seconds
+        const interval = setInterval(fetchUpdates, 30000);
+        return () => clearInterval(interval);
+    }
   }, [user?._id]);
 
   const toggleTheme = () => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
@@ -91,15 +106,16 @@ const Navbar = ({ user, setPage, onLogout }) => {
 
         {user ? (
           <div className="flex items-center gap-4 sm:gap-6">
-            <div className="hidden md:flex items-center gap-6 mr-2">
-              <button onClick={() => setPage('dashboard')} className="text-sm font-bold text-zinc-900 dark:text-zinc-100 transition-colors">Dashboard</button>
-              <button onClick={() => setPage('matches')} className="text-sm font-bold text-zinc-900 dark:text-zinc-100 transition-colors">Explore</button>
+            <div className="hidden md:flex items-center gap-6 mr-2 text-zinc-900 dark:text-zinc-100 font-bold text-sm">
+              <button onClick={() => setPage('dashboard')}>Dashboard</button>
+              <button onClick={() => setPage('matches')}>Explore</button>
             </div>
 
             <button onClick={toggleTheme} className="p-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full text-zinc-900 dark:text-zinc-100 transition-all active:scale-90">
               {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
             </button>
 
+            {/* Notifications Bell */}
             <div className="relative">
               <button 
                 onClick={() => {
@@ -134,15 +150,7 @@ const Navbar = ({ user, setPage, onLogout }) => {
                                    notif.type === 'REQUEST_REJECTED' ? 'friend request rejected' : 'sent a request'}
                                 </span>
                               </p>
-
-                              <div className="hidden group-hover:block mt-2 p-2 bg-white dark:bg-zinc-800 rounded-lg border border-zinc-100 dark:border-zinc-700 shadow-sm transition-all">
-                                <p className="text-[9px] font-black text-blue-500 uppercase mb-1">Looking For</p>
-                                <p className="text-[10px] italic text-zinc-500 dark:text-zinc-400 leading-tight">
-                                  "{notif.sender?.lookingFor || 'Exploring tribes'}"
-                                </p>
-                              </div>
-
-                              {notif.type === 'SYSTEM_ALERT' && (
+                              {notif.type === 'SYSTEM_ALERT' && !notif.isProcessed && (
                                 <div className="flex gap-2 mt-3">
                                   <button onClick={() => handleAction('accept', notif.sender?._id)} className="flex-1 py-1.5 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-[10px] font-bold rounded-lg flex items-center justify-center gap-1">
                                     <Check size={12} /> Accept
@@ -152,10 +160,9 @@ const Navbar = ({ user, setPage, onLogout }) => {
                                   </button>
                                 </div>
                               )}
-
-                              {notif.type === 'REQUEST_ACCEPTED' && (
-                                <button onClick={() => setPage('chat')} className="w-full mt-2 py-1 text-[10px] font-bold text-blue-500 flex items-center gap-1 justify-center border border-blue-500/20 rounded-lg hover:bg-blue-500/5">
-                                   Send Hi
+                              {(notif.type === 'REQUEST_ACCEPTED' || notif.isProcessed) && notif.type !== 'REQUEST_REJECTED' && (
+                                <button onClick={() => { setPage('chat'); setHasUnreadChats(false); }} className="w-full mt-2 py-1.5 text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800 rounded-lg flex items-center justify-center gap-2 hover:bg-emerald-100 transition-colors">
+                                   <MessageSquare size={12} /> Send Hi
                                 </button>
                               )}
                             </div>
@@ -168,15 +175,25 @@ const Navbar = ({ user, setPage, onLogout }) => {
               )}
             </div>
 
-            <button onClick={() => setPage('chat')} className="p-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full text-zinc-900 dark:text-zinc-100 transition-all active:scale-90">
+            {/* Chat Icon with Notification Sign */}
+            <button 
+                onClick={() => {
+                    setPage('chat');
+                    setHasUnreadChats(false); // Clear badge when clicking chat
+                }} 
+                className="p-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full text-zinc-900 dark:text-zinc-100 transition-all active:scale-90 relative"
+            >
               <MessageSquare size={20} />
+              {hasUnreadChats && (
+                  <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white dark:border-zinc-950 animate-bounce"></span>
+              )}
             </button>
 
             <div className="h-8 w-[1px] bg-zinc-200 dark:bg-zinc-800 hidden sm:block"></div>
 
             <div className="flex items-center gap-3 group cursor-pointer" onClick={() => setPage('onboarding')}>
-              <div className="text-right hidden lg:block">
-                <p className="text-sm font-bold text-zinc-500 dark:text-zinc-100 leading-none">{user.name || 'NITian'}</p>
+              <div className="text-right hidden lg:block text-zinc-900 dark:text-zinc-100">
+                <p className="text-sm font-bold leading-none">{user.name || 'NITian'}</p>
                 <p className="text-[10px] font-bold text-zinc-400 uppercase mt-1 tracking-widest">Profile</p>
               </div>
               <div className="w-10 h-10 rounded-full border-2 border-white dark:border-zinc-800 shadow-sm overflow-hidden bg-zinc-100 hover:ring-2 hover:ring-zinc-900 transition-all">
