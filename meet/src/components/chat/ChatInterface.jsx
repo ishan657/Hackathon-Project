@@ -16,7 +16,7 @@ const socket = io(API_URL, {
   withCredentials: true
 });
 
-// MUST match your backend secret
+// MUST match your backend secret exactly
 const SECRET_KEY = "your_very_secret_key"; 
 
 const ChatInterface = ({ user, setPage, activeChatFriend, setActiveChatFriend }) => {
@@ -41,7 +41,7 @@ const ChatInterface = ({ user, setPage, activeChatFriend, setActiveChatFriend })
     }
   };
 
-  // --- 2. FETCH FRIENDS LIST & HANDLE REDIRECT ---
+  // --- 2. FETCH FRIENDS LIST ---
   useEffect(() => {
     const fetchFriends = async () => {
       try {
@@ -51,14 +51,9 @@ const ChatInterface = ({ user, setPage, activeChatFriend, setActiveChatFriend })
         });
         setFriends(res.data);
 
-        // If redirected from "Send Hi" in Navbar
         if (activeChatFriend) {
           const friendInList = res.data.find(f => f._id === activeChatFriend._id);
-          if (friendInList) {
-            setActiveFriend(friendInList);
-          } else {
-            setActiveFriend(activeChatFriend);
-          }
+          setActiveFriend(friendInList || activeChatFriend);
         }
       } catch (err) {
         console.error("Error fetching friends:", err);
@@ -67,13 +62,12 @@ const ChatInterface = ({ user, setPage, activeChatFriend, setActiveChatFriend })
       }
     };
     fetchFriends();
-  }, [activeChatFriend]); // Re-run if a new friend is selected from Navbar
+  }, [activeChatFriend]);
 
   // --- 3. SOCKET & MESSAGE HISTORY ---
   useEffect(() => {
     if (!activeFriend?.conversationId) return;
 
-    // Join room (backend expects string or {conversationId})
     socket.emit('join_room', activeFriend.conversationId);
 
     const fetchMessages = async () => {
@@ -95,10 +89,10 @@ const ChatInterface = ({ user, setPage, activeChatFriend, setActiveChatFriend })
 
     fetchMessages();
 
-    // Listen for live messages
+    // LISTEN FOR LIVE MESSAGES
     socket.on('receive_message', (data) => {
-      // Only add to history if it belongs to current active conversation
-      if (data.conversationId === activeFriend.conversationId) {
+      // ONLY add if it's the current chat AND NOT from me (I handle mine locally)
+      if (data.conversationId === activeFriend.conversationId && data.sender !== user._id) {
         const decryptedMsg = {
           ...data,
           text: decryptText(data.encryptedText, data.iv)
@@ -110,13 +104,13 @@ const ChatInterface = ({ user, setPage, activeChatFriend, setActiveChatFriend })
     return () => {
       socket.off('receive_message');
     };
-  }, [activeFriend]);
+  }, [activeFriend, user._id]);
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatHistory]);
 
-  // --- 4. SEND MESSAGE (SOCKET ONLY) ---
+  // --- 4. SEND MESSAGE (INSTANT UI UPDATE) ---
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!message.trim() || !activeFriend) return;
@@ -130,12 +124,17 @@ const ChatInterface = ({ user, setPage, activeChatFriend, setActiveChatFriend })
       conversationId: activeFriend.conversationId,
       sender: user._id,
       encryptedText: encrypted,
-      iv: iv
+      iv: iv,
+      text: message, // Plain text for instant local display
+      createdAt: new Date().toISOString()
     };
 
-    // Emit live via socket - backend handles persistence
+    // 1. Emit live via socket
     socket.emit('send_message', messageData);
     
+    // 2. INSTANT UI UPDATE: Add my message to state immediately
+    setChatHistory((prev) => [...prev, messageData]);
+
     setMessage("");
   };
 
@@ -157,7 +156,7 @@ const ChatInterface = ({ user, setPage, activeChatFriend, setActiveChatFriend })
                 key={friend._id}
                 onClick={() => {
                    setActiveFriend(friend);
-                   if(setActiveChatFriend) setActiveChatFriend(null); // Clear global state once selected
+                   if(setActiveChatFriend) setActiveChatFriend(null);
                 }}
                 className={`p-4 flex items-center gap-3 cursor-pointer transition-all hover:bg-zinc-50 dark:hover:bg-zinc-900 ${activeFriend?._id === friend._id ? 'bg-zinc-100 dark:bg-zinc-800' : ''}`}
               >
@@ -166,7 +165,7 @@ const ChatInterface = ({ user, setPage, activeChatFriend, setActiveChatFriend })
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-zinc-900 dark:text-zinc-100 truncate">{friend.name}</p>
-                  <p className="text-xs text-zinc-500 truncate">{friend.lastMessage ? "New Encrypted Message" : "Start chatting"}</p>
+                  <p className="text-xs text-zinc-500 truncate">Start vibing...</p>
                 </div>
               </div>
             ))
