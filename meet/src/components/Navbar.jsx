@@ -134,7 +134,7 @@ const Navbar = ({ user, setPage, onLogout, setActiveChatFriend }) => {
           <div className="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center">
             <Zap className="text-white w-5 h-5 fill-white" />
           </div>
-          <span className="font-bold text-xl tracking-tight text-zinc-900 dark:text-zinc-100">NITA Connect</span>
+          <span className="font-bold text-xl tracking-tight text-zinc-900 dark:text-zinc-100">CAMPUS CONNECT</span>
         </div>
 
         {user ? (
@@ -325,12 +325,13 @@ const Navbar = ({ user, setPage, onLogout, setActiveChatFriend }) => {
         ) : (
           <div className="flex items-center gap-4">
             <Button variant="ghost" className="px-4 dark:text-white" onClick={() => setPage("login")}>Login</Button>
-            <Button variant="primary" onClick={() => setPage("login")}>Join NITA</Button>
+            <Button variant="primary" onClick={() => setPage("login")}>Join CAMPUS CONNECT</Button>
           </div>
         )}
       </div>
     </nav>
   );
 };
+
 
 export default Navbar;
