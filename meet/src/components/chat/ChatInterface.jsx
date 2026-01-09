@@ -8,12 +8,15 @@ import {
 } from 'lucide-react';
 
 // Dynamic API URL for Vercel/Render compatibility
-const API_URL = import.meta.env.VITE_API_URL || "https://hackathon-project-owg6.onrender.com";
+// AT THE TOP OF ChatInterface.jsx
+// Hardcode the https:// and ensure there is NO trailing slash /
+const API_URL = "https://hackathon-project-owg6.onrender.com"; 
 
-// Initialize Socket.io connection with polling fallback for Render stability
 const socket = io(API_URL, {
-  transports: ['websocket', 'polling'],
-  withCredentials: true
+  transports: ['polling', 'websocket'], // Force polling first for better Render compatibility
+  withCredentials: true,
+  reconnection: true,
+  reconnectionAttempts: Infinity
 });
 
 // MUST match your backend secret exactly
