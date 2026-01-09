@@ -1,28 +1,45 @@
 require('dotenv').config();
 const express = require('express');
-const http = require('http'); // Required for WebSockets
-const { Server } = require('socket.io'); // Socket.io server
+const http = require('http'); 
+const { Server } = require('socket.io'); 
 const connectDB = require('./config/DB');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const notificationRoute = require('./routes/notificationRoutes');
-const socketHandler = require('./socket'); // Your new socket logic file
+const socketHandler = require('./socket'); 
 const cors = require('cors');
 const messageRoutes = require('./routes/messageRoutes');
 
 const app = express();
-app.use(cors({
-  origin: true,
-  credentials :true,
-}));
-const server = http.createServer(app); // Wrap express app
 
-// Initialize Socket.io with CORS safety
+// 1. Setup CORS allowed origins
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://hackathon-project-eight-pied.vercel.app/" // Add your actual frontend URL here later
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      return callback(new Error('CORS policy violation'), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true,
+}));
+
+const server = http.createServer(app); 
+
+// 2. Initialize Socket.io with enhanced CORS safety
 const io = new Server(server, {
   cors: {
-    origin: "*", // In production, replace with your frontend URL
-    methods: ["GET", "POST"]
-  }
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true // Crucial for handshake success
+  },
+  transports: ['websocket', 'polling'] // Allow fallback
 });
 
 // Connect to MongoDB
@@ -34,7 +51,7 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/notifications',notificationRoute);
+app.use('/api/notifications', notificationRoute);
 app.use('/api/messages', messageRoutes);
 
 // Initialize Socket Logic
@@ -50,7 +67,8 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = 5001;
+// 3. FIX: Use Render's dynamic port or default to 5001 for local dev
+const PORT = process.env.PORT || 5001;
 
 // IMPORTANT: Listen on 'server', not 'app'
 server.listen(PORT, () => {
