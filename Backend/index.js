@@ -14,26 +14,27 @@ const app = express();
 const server = http.createServer(app);
 
 // 1. Setup CORS Middleware
-// Using a simpler setup that handles OPTIONS automatically
 app.use(cors({
   origin: function (origin, callback) {
-    // Allows any origin to connect
+    // Allows any origin (Vercel, Render, etc.) to connect
     return callback(null, true);
   },
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  // ADDED "PATCH" to the list below
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
 // 2. The FIX for the crash: Use a REGEX for the options wildcard
-// Instead of '*', we use /.*/ which Express 5 won't complain about
+// This handles the "Preflight" handshake for every route
 app.options(/.*/, cors());
 
 // 3. Initialize Socket.io
 const io = new Server(server, {
   cors: {
     origin: true, 
-    methods: ["GET", "POST"],
+    // ADDED "PATCH" here too just in case
+    methods: ["GET", "POST", "PATCH"],
     credentials: true,
   },
 });
@@ -50,7 +51,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/notifications", notificationRoute);
 app.use("/api/messages", messageRoutes);
 
-// Welcome Route
+// Welcome Route (Crucial for waking up Render)
 app.get("/", (req, res) => {
   res.send("Campus Connect Backend is LIVE!");
 });
