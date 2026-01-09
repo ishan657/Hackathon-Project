@@ -14,7 +14,9 @@ const MatchesPage = ({ aiMatches = [], setPage, user }) => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(`http://localhost:5000/api/users/request/${cleanId}`, {}, {
+      const response = await axios.post(`
+https://hackathon-project-owg6.onrender.com
+/api/users/request/${cleanId}`, {}, {
   headers: { 'Authorization': `Bearer ${token}` }
 });
 

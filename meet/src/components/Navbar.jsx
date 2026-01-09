@@ -32,14 +32,14 @@ const Navbar = ({ user, setPage, onLogout }) => {
       if (!token) return;
 
       // Fetch notifications
-      const response = await axios.get('http://localhost:5000/api/notifications/recent', {
+      const response = await axios.get('https://hackathon-project-owg6.onrender.com/api/notifications/recent', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setNotifications(response.data);
 
       // Fetch friends/chats to check for new messages
       // Note: Assuming your friends endpoint returns a "hasUnread" or similar field
-      const chatRes = await axios.get('http://localhost:5000/api/users/my-friends', {
+      const chatRes = await axios.get('https://hackathon-project-owg6.onrender.com/api/users/my-friends', {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -67,7 +67,9 @@ const Navbar = ({ user, setPage, onLogout }) => {
 
     try {
       const token = localStorage.getItem('token');
-      const endpoint = `http://localhost:5000/api/users/${action}/${senderId}`;
+      const endpoint = `
+https://hackathon-project-owg6.onrender.com
+/api/users/${action}/${senderId}`;
       await axios.post(endpoint, {}, { headers: { Authorization: `Bearer ${token}` } });
       setTimeout(() => fetchUpdates(), 500); 
     } catch (err) {

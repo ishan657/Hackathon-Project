@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 
 // Initialize Socket.io connection
-const socket = io('http://localhost:5000');
+const socket = io('https://hackathon-project-owg6.onrender.com');
 // MUST match your backend secret
 const SECRET_KEY = "your_very_secret_key"; 
 
@@ -39,7 +39,7 @@ const ChatInterface = ({ user, setPage }) => {
     const fetchFriends = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:5000/api/users/my-friends', {
+        const res = await axios.get('https://hackathon-project-owg6.onrender.com/api/users/my-friends', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setFriends(res.data);
@@ -62,7 +62,7 @@ const ChatInterface = ({ user, setPage }) => {
     const fetchMessages = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get(`http://localhost:5000/api/messages/${activeFriend.conversationId}`, {
+        const res = await axios.get(`https://hackathon-project-owg6.onrender.com/api/messages/${activeFriend.conversationId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         

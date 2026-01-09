@@ -34,8 +34,7 @@ const handleFinalSubmit = async () => {
   try {
     // 1. PATCH REQUEST
     console.log("📡 Step 1: Updating Profile Intent...");
-    const patchRes = await axios.patch(
-      "http://localhost:5000/api/users/profile",
+    const patchRes = await axios.patch("https://hackathon-project-owg6.onrender.com/api/users/profile",
       { lookingFor: intent },
       { headers: { 'Authorization': `Bearer ${token}` } }
     );
@@ -43,8 +42,7 @@ const handleFinalSubmit = async () => {
 
     // 2. GET SMART DISCOVERY
     console.log("📡 Step 2: Hitting Smart Discovery Route...");
-    const discoveryRes = await axios.get(
-      "http://localhost:5000/api/users/smart-discovery",
+    const discoveryRes = await axios.get("https://hackathon-project-owg6.onrender.com/api/users/smart-discovery",
       { headers: { 'Authorization': `Bearer ${token}` } }
     );
     onStartExploring(discoveryRes.data);

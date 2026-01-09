@@ -43,9 +43,8 @@ const OnboardingForm = ({ signupData, setGlobalUser, onComplete }) => {
     };
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/register", 
-        finalPayload
+      const response = await axios.post("https://hackathon-project-owg6.onrender.com/api/auth/register",
+finalPayload
       );
 
       if (response.data.token) {
