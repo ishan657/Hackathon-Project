@@ -7,7 +7,7 @@ const rankMatches = async (targetUser, candidates) => {
     // Force JSON Mode for the model response
     const model = genAI.getGenerativeModel(
       { 
-        model: "gemini-1.5-flash", // Note: Ensure your model name is correct for your tier
+        model: "gemini-2.5-flash", // Note: Ensure your model name is correct for your tier
         generationConfig: { responseMimeType: "application/json" } 
       }
     );
