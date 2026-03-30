@@ -18,7 +18,7 @@ import {
 // Dynamic API URL for Vercel/Render compatibility
 // AT THE TOP OF ChatInterface.jsx
 // Hardcode the https:// and ensure there is NO trailing slash /
-const API_URL = "https://hackathon-project-owg6.onrender.com";
+const API_URL = "https://hackathon-project-backend-q9rw.onrender.com/";
 
 const socket = io(API_URL, {
   transports: ["polling", "websocket"], // Force polling first for better Render compatibility
