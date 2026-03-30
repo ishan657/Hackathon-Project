@@ -43,7 +43,7 @@ const OnboardingForm = ({ signupData, setGlobalUser, onComplete }) => {
     };
 
     try {
-      const response = await axios.post("https://hackathon-project-owg6.onrender.com/api/auth/register",
+      const response = await axios.post("https://hackathon-project-backend-q9rw.onrender.com/api/auth/register",
 finalPayload
       );
 
