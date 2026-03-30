@@ -121,7 +121,7 @@ const Dashboard = ({ user, setPage, onStartExploring, setGlobalUser }) => {
       // 1. PATCH REQUEST
       console.log("📡 Step 1: Updating Profile Intent...");
       const patchRes = await axios.patch(
-        "https://hackathon-project-owg6.onrender.com/api/users/profile",
+        "https://hackathon-project-backend-q9rw.onrender.com/api/users/profile",
         { lookingFor: intent },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -130,7 +130,7 @@ const Dashboard = ({ user, setPage, onStartExploring, setGlobalUser }) => {
       // 2. GET SMART DISCOVERY
       console.log("📡 Step 2: Hitting Smart Discovery Route...");
       const discoveryRes = await axios.get(
-        "https://hackathon-project-owg6.onrender.com/api/users/smart-discovery",
+        "https://hackathon-project-backend-q9rw.onrender.com/api/users/smart-discovery",
         { headers: { Authorization: `Bearer ${token}` } }
       );
       onStartExploring(discoveryRes.data);
