@@ -44,7 +44,7 @@ const Navbar = ({ user, setPage, onLogout, setActiveChatFriend }) => {
       if (!token) return;
 
       const response = await axios.get(
-        "https://hackathon-project-owg6.onrender.com/api/notifications/recent",
+        "https://hackathon-project-backend-q9rw.onrender.com/api/notifications/recent",
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
@@ -61,7 +61,7 @@ const Navbar = ({ user, setPage, onLogout, setActiveChatFriend }) => {
       });
 
       const chatRes = await axios.get(
-        "https://hackathon-project-owg6.onrender.com/api/users/my-friends",
+        "https://hackathon-project-backend-q9rw.onrender.com/api/users/my-friends",
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -93,7 +93,7 @@ const Navbar = ({ user, setPage, onLogout, setActiveChatFriend }) => {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        `https://hackathon-project-owg6.onrender.com/api/users/${action}/${senderId}`,
+        `https://hackathon-project-backend-q9rw.onrender.com/api/users/${action}/${senderId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
