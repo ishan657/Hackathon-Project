@@ -10,7 +10,7 @@ export default function LoginPage({ onLogin, onGoSignup }) {
   const [error, setError] = useState("");
 
  
-  const API_URL = import.meta.env.VITE_API_URL || "https://hackathon-project-owg6.onrender.com";
+  const API_URL = import.meta.env.VITE_API_URL || "https://hackathon-project-backend-q9rw.onrender.com/";
 
   const handleLogin = async (e) => {
     e.preventDefault(); 
