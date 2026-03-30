@@ -26,7 +26,7 @@ const MatchesPage = ({ aiMatches = [], setPage, user }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        `https://hackathon-project-owg6.onrender.com/api/users/request/${cleanId}`,
+        `https://hackathon-project-backend-q9rw.onrender.com/api/users/request/${cleanId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
